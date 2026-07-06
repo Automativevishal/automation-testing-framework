@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Google Search Suite" verbose="2" parallel="false">
+    <listeners>
+        <listener class-name="com.Utility.listeners"/>
+    </listeners>
+
+    <test name="Google Search Chrome">
+        <parameter name="BrowserName" value="chrome"/>
+        <parameter name="environment" value="google"/>
+        <parameter name="url" value="https://www.google.com/"/>
+        <classes>
+            <class name="com.Test.GooleSeleniumSearch"/>
+        </classes>
+    </test>
+</suite>

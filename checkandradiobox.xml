@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Checkbox And Radio Suite" verbose="2" parallel="false">
+    <listeners>
+        <listener class-name="com.Utility.listeners"/>
+    </listeners>
+
+    <test name="Checkbox And Radio Edge">
+        <parameter name="BrowserName" value="edge"/>
+        <parameter name="environment" value="gui"/>
+        <parameter name="url" value="https://testautomationpractice.blogspot.com/"/>
+        <classes>
+            <class name="com.Test.ceckboxAndRedio"/>
+        </classes>
+    </test>
+</suite>

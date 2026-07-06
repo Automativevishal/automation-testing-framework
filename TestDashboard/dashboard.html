@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hybrid Framework — Test Dashboard</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --border:#2a2f3a;
+    --text:#e6e8ec; --muted:#8b93a3; --accent:#4f8cff; --green:#2ecc71;
+    --red:#ff5c5c; --yellow:#f5c542; --mono:'Consolas','Menlo',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);}
+  .app{display:flex;height:100vh;}
+  .sidebar{width:220px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+  .brand{padding:18px 16px;font-weight:700;font-size:15px;border-bottom:1px solid var(--border);}
+  .brand small{display:block;color:var(--muted);font-weight:400;font-size:11px;margin-top:2px;}
+  .nav{flex:1;padding:10px;}
+  .nav button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:transparent;border:none;color:var(--muted);
+    padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;margin-bottom:2px;}
+  .nav button:hover{background:var(--panel2);color:var(--text);}
+  .nav button.active{background:var(--accent);color:#fff;}
+  .status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px;}
+  .status-dot.running{background:var(--yellow);animation:pulse 1s infinite;}
+  .status-dot.idle{background:var(--green);}
+  @keyframes pulse{0%{opacity:1;}50%{opacity:.3;}100%{opacity:1;}}
+  .footer-status{padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);}
+
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .topbar{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .topbar h1{font-size:16px;margin:0;}
+  .content{flex:1;overflow:auto;padding:20px 24px;}
+
+  .btn{background:var(--accent);color:#fff;border:none;padding:9px 16px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:600;}
+  .btn:hover{opacity:.9;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn.secondary{background:var(--panel2);border:1px solid var(--border);color:var(--text);}
+  .btn.danger{background:var(--red);}
+  .btn.small{padding:5px 10px;font-size:12px;}
+
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;}
+  .card h3{margin:0 0 10px 0;font-size:13.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+
+  .class-item{border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--panel2);}
+  .class-header{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;}
+  .class-header .fqcn{color:var(--muted);font-size:11px;font-family:var(--mono);}
+  .class-header .cname{font-weight:600;font-size:13.5px;}
+  .methods{padding:0 12px 10px 40px;display:none;}
+  .methods.open{display:block;}
+  .methods div{color:var(--muted);font-size:12.5px;font-family:var(--mono);padding:3px 0;}
+  .badge{font-size:11px;padding:2px 7px;border-radius:10px;margin-left:auto;}
+  .badge.pass{background:rgba(46,204,113,.15);color:var(--green);}
+  .badge.fail{background:rgba(255,92,92,.15);color:var(--red);}
+
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  select,input[type=text]{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px;}
+
+  .console{background:#0a0b0d;border:1px solid var(--border);border-radius:10px;padding:14px;font-family:var(--mono);
+    font-size:12.5px;line-height:1.5;height:280px;overflow-y:auto;white-space:pre-wrap;color:#c9d1d9;}
+  .console .err{color:var(--red);}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);}
+  th{color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;}
+  tr:hover{background:var(--panel2);}
+  .status-pill{padding:2px 9px;border-radius:10px;font-size:11.5px;font-weight:600;}
+  .status-pill.PASS{background:rgba(46,204,113,.15);color:var(--green);}
+  .status-pill.FAIL{background:rgba(255,92,92,.15);color:var(--red);}
+  .status-pill.SKIP{background:rgba(245,197,66,.15);color:var(--yellow);}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .empty{color:var(--muted);font-size:13px;padding:20px;text-align:center;}
+
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  .datatable{width:100%;border-collapse:collapse;}
+  .datatable td{border:1px solid var(--border);padding:0;}
+  .datatable td input{width:100%;border:none;background:transparent;color:var(--text);padding:7px 8px;font-size:12.5px;font-family:var(--mono);}
+  .datatable td input:focus{background:var(--panel2);outline:1px solid var(--accent);}
+  .sheet-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+  .sheet-tab{padding:6px 14px;border-radius:7px;background:var(--panel2);border:1px solid var(--border);cursor:pointer;font-size:12.5px;}
+  .sheet-tab.active{background:var(--accent);color:#fff;}
+
+  .report-list{max-height:520px;overflow-y:auto;}
+  .report-item{padding:9px 12px;border-radius:7px;cursor:pointer;font-size:12.5px;font-family:var(--mono);margin-bottom:4px;}
+  .report-item:hover,.report-item.active{background:var(--panel2);}
+  .report-frame{width:100%;height:78vh;border:1px solid var(--border);border-radius:10px;background:#fff;}
+
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50;}
+  .modal-backdrop.open{display:flex;}
+  .modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px;width:420px;}
+  .modal h2{margin:0 0 14px 0;font-size:15px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;}
+  .field input,.field select{width:100%;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;}
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--panel2);border:1px solid var(--border);padding:12px 18px;
+    border-radius:8px;font-size:13px;z-index:60;display:none;}
+  .toast.show{display:block;}
+  .toast.error{border-color:var(--red);color:var(--red);}
+  .toast.success{border-color:var(--green);color:var(--green);}
+  .summary-row{display:flex;gap:14px;margin-bottom:14px;}
+  .summary-box{flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:14px;text-align:center;}
+  .summary-box .num{font-size:24px;font-weight:700;}
+  .summary-box .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand">Hybrid Framework<small>Local Test Dashboard</small></div>
+    <div class="nav">
+      <button class="nav-btn active" data-tab="testcases">🧪 Test Cases</button>
+      <button class="nav-btn" data-tab="suites">📄 Suites</button>
+      <button class="nav-btn" data-tab="console">🖥 Live Console</button>
+      <button class="nav-btn" data-tab="results">✅ Results</button>
+      <button class="nav-btn" data-tab="reports">📊 Reports</button>
+      <button class="nav-btn" data-tab="testdata">📋 Test Data</button>
+      <button class="nav-btn" data-tab="config">⚙️ Config</button>
+    </div>
+    <div class="footer-status">
+      <span class="status-dot idle" id="statusDot"></span><span id="statusText">Idle</span>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Test Cases</h1>
+      <div style="display:flex;gap:10px;">
+        <button class="btn secondary small" onclick="rescan()">🔄 Rescan Project</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- TEST CASES TAB -->
+      <div class="tab-panel active" id="tab-testcases">
+        <div class="toolbar">
+          <button class="btn secondary small" onclick="toggleAll(true)">Select All</button>
+          <button class="btn secondary small" onclick="toggleAll(false)">Clear</button>
+          <select id="browserSelect"><option value="chrome">Chrome</option><option value="edge">Edge</option></select>
+          <input type="text" id="urlOverride" placeholder="Optional URL override (blank = use Config)" style="flex:1;min-width:220px;">
+          <button class="btn" id="runBtn" onclick="runSelected()">▶ Run Selected</button>
+          <button class="btn secondary" onclick="openAddModal()">➕ Add Test Case</button>
+        </div>
+        <div id="classList" class="card"><div class="empty">Loading…</div></div>
+      </div>
+
+      <!-- SUITES TAB -->
+      <div class="tab-panel" id="tab-suites">
+        <p style="color:var(--muted);font-size:13px;margin-top:0;">Run an entire TestNG suite XML file exactly as configured (same as right-click → Run in Eclipse).</p>
+        <div id="suiteList" class="card"><div class="empty">Loading…</div></div>
+      </div>
+
+      <!-- CONSOLE TAB -->
+      <div class="tab-panel" id="tab-console">
+        <div class="toolbar">
+          <button class="btn secondary small" onclick="clearConsole()">Clear</button>
+        </div>
+        <div class="console" id="consoleBox">Waiting for a run…</div>
+      </div>
+
+      <!-- RESULTS TAB -->
+      <div class="tab-panel" id="tab-results">
+        <div class="summary-row" id="summaryRow" style="display:none;">
+          <div class="summary-box"><div class="num" id="sumPass" style="color:var(--green);">0</div><div class="lbl">Passed</div></div>
+          <div class="summary-box"><div class="num" id="sumFail" style="color:var(--red);">0</div><div class="lbl">Failed</div></div>
+          <div class="summary-box"><div class="num" id="sumSkip" style="color:var(--yellow);">0</div><div class="lbl">Skipped</div></div>
+        </div>
+        <div class="card" id="resultsCard"><div class="empty">No run yet. Go to Test Cases or Suites and click Run.</div></div>
+      </div>
+
+      <!-- REPORTS TAB -->
+      <div class="tab-panel" id="tab-reports">
+        <div class="grid">
+          <div class="card">
+            <h3>Extent Reports</h3>
+            <div class="report-list" id="reportList"><div class="empty">Loading…</div></div>
+          </div>
+          <div class="card">
+            <h3 id="reportViewTitle">Report Preview</h3>
+            <iframe class="report-frame" id="reportFrame"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEST DATA TAB -->
+      <div class="tab-panel" id="tab-testdata">
+        <div class="toolbar">
+          <button class="btn small" onclick="addRow()">➕ Add Row</button>
+          <button class="btn secondary small" onclick="addCol()">➕ Add Column</button>
+          <button class="btn secondary small" onclick="addSheet()">➕ New Sheet</button>
+          <button class="btn small" onclick="saveTestData()">💾 Save to Excel</button>
+          <span id="testDataPath" style="color:var(--muted);font-size:11.5px;margin-left:auto;font-family:var(--mono);"></span>
+        </div>
+        <div class="sheet-tabs" id="sheetTabs"></div>
+        <div class="card" style="overflow:auto;">
+          <table class="datatable" id="dataTable"></table>
+        </div>
+      </div>
+
+      <!-- CONFIG TAB -->
+      <div class="tab-panel" id="tab-config">
+        <div class="toolbar">
+          <button class="btn small" onclick="addConfigRow()">➕ Add Key</button>
+          <button class="btn small" onclick="saveConfig()">💾 Save Config</button>
+        </div>
+        <div class="card"><table id="configTable"><thead><tr><th style="width:40%;">Key</th><th>Value</th><th></th></tr></thead><tbody></tbody></table></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Add Test Case Modal -->
+<div class="modal-backdrop" id="addModal">
+  <div class="modal">
+    <h2>Add New Test Case</h2>
+    <div class="field"><label>Class Name (e.g. VerifyCheckoutTest)</label><input type="text" id="newClassName" placeholder="MyNewTest"></div>
+    <div class="field"><label>First Test Method Name</label><input type="text" id="newMethodName" placeholder="tc_01_verifySomething"></div>
+    <div class="field"><label>Extends</label>
+      <select id="newBaseClass"><option value="BaseClass">BaseClass (UI / Selenium)</option><option value="APIBaseClass">APIBaseClass (REST API)</option></select>
+    </div>
+    <p style="color:var(--muted);font-size:12px;">This creates a real .java file under <code>src/test/java/com/Test/</code> with a stub method. It will appear in the Test Cases list — open it in Eclipse to write the actual steps.</p>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeAddModal()">Cancel</button>
+      <button class="btn" onclick="createClass()">Create</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+let state = { classes: [], suites: [], selected: new Set(), testdata: {sheets:{}}, currentSheet: null, config: [] };
+
+// ---------------- Navigation ----------------
+document.querySelectorAll(".nav-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-"+btn.dataset.tab).classList.add("active");
+    document.getElementById("pageTitle").textContent = btn.textContent.trim().replace(/^\S+\s/,'');
+  });
+});
+
+function toast(msg, type){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = "toast show " + (type||"");
+  setTimeout(()=>t.classList.remove("show"), 3500);
+}
+
+// ---------------- Scan / load ----------------
+async function rescan(){
+  const res = await fetch("/api/scan");
+  const data = await res.json();
+  state.classes = data.classes; state.suites = data.suites;
+  renderClasses(); renderSuites();
+}
+
+function renderClasses(){
+  const el = document.getElementById("classList");
+  if(state.classes.length===0){ el.innerHTML = '<div class="empty">No test classes found. Click "Add Test Case" to create one.</div>'; return; }
+  el.innerHTML = state.classes.map(c=>{
+    const checked = state.selected.has(c.fqcn) ? "checked" : "";
+    return `<div class="class-item">
+      <div class="class-header">
+        <input type="checkbox" ${checked} onchange="toggleClass('${c.fqcn}', this.checked)">
+        <div>
+          <div class="cname">${c.className} <span style="color:var(--muted);font-weight:400;">(${c.methods.length} test${c.methods.length>1?'s':''})</span></div>
+          <div class="fqcn">${c.fqcn}</div>
+        </div>
+        <span style="margin-left:auto;color:var(--muted);cursor:pointer;" onclick="toggleMethods(event,'${c.fqcn}')">▾</span>
+      </div>
+      <div class="methods" id="methods-${c.fqcn.replace(/\./g,'_')}">
+        ${c.methods.map(m=>`<div>• ${m}</div>`).join("")}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function toggleMethods(ev, fqcn){
+  ev.stopPropagation();
+  document.getElementById("methods-"+fqcn.replace(/\./g,'_')).classList.toggle("open");
+}
+function toggleClass(fqcn, checked){
+  if(checked) state.selected.add(fqcn); else state.selected.delete(fqcn);
+}
+function toggleAll(sel){
+  state.selected = new Set(sel ? state.classes.map(c=>c.fqcn) : []);
+  renderClasses();
+}
+
+function renderSuites(){
+  const el = document.getElementById("suiteList");
+  if(state.suites.length===0){ el.innerHTML = '<div class="empty">No suite XML files found in project root.</div>'; return; }
+  el.innerHTML = state.suites.map(s=>`
+    <div class="class-item"><div class="class-header">
+      <div class="cname">${s}</div>
+      <button class="btn small" style="margin-left:auto;" onclick="runSuite('${s}')">▶ Run Suite</button>
+    </div></div>`).join("");
+}
+
+// ---------------- Run ----------------
+async function runSelected(){
+  if(state.selected.size===0){ toast("Select at least one test class first.","error"); return; }
+  await triggerRun({ mode:"classes", classes:[...state.selected],
+    browser: document.getElementById("browserSelect").value,
+    url: document.getElementById("urlOverride").value });
+}
+async function runSuite(name){
+  await triggerRun({ mode:"suite", suiteFile:name });
+}
+async function triggerRun(payload){
+  document.querySelectorAll('.nav-btn').forEach(b=>{if(b.dataset.tab==='console')b.click();});
+  clearConsole();
+  const res = await fetch("/api/run",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  const data = await res.json();
+  if(data.error){ toast(data.error,"error"); return; }
+  setRunning(true);
+}
+
+function setRunning(running){
+  document.getElementById("statusDot").className = "status-dot " + (running?"running":"idle");
+  document.getElementById("statusText").textContent = running ? "Running…" : "Idle";
+  document.getElementById("runBtn").disabled = running;
+}
+
+// ---------------- Console / socket ----------------
+const consoleBox = document.getElementById("consoleBox");
+function clearConsole(){ consoleBox.textContent = ""; }
+socket.on("log", (line)=>{
+  if(consoleBox.textContent==="Waiting for a run…") consoleBox.textContent="";
+  const span = document.createElement("span");
+  span.textContent = line;
+  if(/error|exception|fail/i.test(line)) span.className="err";
+  consoleBox.appendChild(span);
+  consoleBox.scrollTop = consoleBox.scrollHeight;
+});
+socket.on("run-finished", (data)=>{
+  setRunning(false);
+  if(data.error){ toast("Run failed to start: "+data.error, "error"); return; }
+  toast("Run finished (exit code "+data.exitCode+")", data.exitCode===0 ? "success":"error");
+  renderResults(data.results);
+  if(data.report){ loadReports().then(()=>selectReport(data.report)); }
+});
+
+// ---------------- Results ----------------
+function renderResults(results){
+  const card = document.getElementById("resultsCard");
+  const summaryRow = document.getElementById("summaryRow");
+  if(!results){ card.innerHTML='<div class="empty">No results file found. Check the console for build/setup errors.</div>'; summaryRow.style.display="none"; return; }
+  summaryRow.style.display="flex";
+  document.getElementById("sumPass").textContent = results.summary.pass;
+  document.getElementById("sumFail").textContent = results.summary.fail;
+  document.getElementById("sumSkip").textContent = results.summary.skip;
+
+  let rows = "";
+  for(const [cls, methods] of Object.entries(results.classResults)){
+    for(const m of methods){
+      rows += `<tr><td>${cls}</td><td>${m.name}</td><td><span class="status-pill ${m.status}">${m.status}</span></td>
+        <td>${m.durationMs} ms</td><td style="color:var(--red);font-size:11.5px;">${m.error?m.error.slice(0,120):""}</td></tr>`;
+    }
+  }
+  card.innerHTML = `<table><thead><tr><th>Class</th><th>Method</th><th>Status</th><th>Duration</th><th>Error</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ---------------- Reports ----------------
+async function loadReports(){
+  const res = await fetch("/api/reports");
+  const list = await res.json();
+  const el = document.getElementById("reportList");
+  if(list.length===0){ el.innerHTML='<div class="empty">No reports yet.</div>'; return; }
+  el.innerHTML = list.map(r=>`<div class="report-item" data-name="${r.name}" onclick="selectReport('${r.name}')">${r.name}</div>`).join("");
+}
+function selectReport(name){
+  document.querySelectorAll(".report-item").forEach(i=>i.classList.toggle("active", i.dataset.name===name));
+  document.getElementById("reportViewTitle").textContent = name;
+  document.getElementById("reportFrame").src = "/api/reports/"+encodeURIComponent(name);
+  document.querySelectorAll('.nav-btn').forEach(b=>{if(b.dataset.tab==='reports')b.click();});
+}
+
+// ---------------- Add Test Case Modal ----------------
+function openAddModal(){ document.getElementById("addModal").classList.add("open"); }
+function closeAddModal(){ document.getElementById("addModal").classList.remove("open"); }
+async function createClass(){
+  const className = document.getElementById("newClassName").value.trim();
+  const methodName = document.getElementById("newMethodName").value.trim();
+  const baseClass = document.getElementById("newBaseClass").value;
+  const res = await fetch("/api/create-class",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({className,methodName,baseClass})});
+  const data = await res.json();
+  if(data.error){ toast(data.error,"error"); return; }
+  toast("Created "+data.file, "success");
+  closeAddModal();
+  document.getElementById("newClassName").value=""; document.getElementById("newMethodName").value="";
+  rescan();
+}
+
+// ---------------- Test Data (Excel) ----------------
+async function loadTestData(){
+  const res = await fetch("/api/testdata");
+  const data = await res.json();
+  state.testdata = data;
+  document.getElementById("testDataPath").textContent = data.path || "";
+  const names = Object.keys(data.sheets||{});
+  state.currentSheet = names[0] || null;
+  renderSheetTabs(); renderDataTable();
+}
+function renderSheetTabs(){
+  const names = Object.keys(state.testdata.sheets||{});
+  document.getElementById("sheetTabs").innerHTML = names.map(n=>
+    `<div class="sheet-tab ${n===state.currentSheet?'active':''}" onclick="switchSheet('${n}')">${n}</div>`).join("");
+}
+function switchSheet(name){ state.currentSheet = name; renderSheetTabs(); renderDataTable(); }
+function renderDataTable(){
+  const table = document.getElementById("dataTable");
+  const rows = (state.testdata.sheets && state.testdata.sheets[state.currentSheet]) || [];
+  const maxCols = Math.max(1, ...rows.map(r=>r.length));
+  let html = "";
+  rows.forEach((row,ri)=>{
+    html += "<tr>";
+    for(let ci=0; ci<maxCols; ci++){
+      const val = row[ci] !== undefined ? row[ci] : "";
+      html += `<td><input value="${String(val).replace(/"/g,'&quot;')}" onchange="updateCell(${ri},${ci},this.value)"></td>`;
+    }
+    html += "</tr>";
+  });
+  table.innerHTML = html || "<tr><td>No data yet — Add Row to start.</td></tr>";
+}
+function updateCell(ri,ci,val){
+  const rows = state.testdata.sheets[state.currentSheet];
+  while(rows.length<=ri) rows.push([]);
+  while(rows[ri].length<=ci) rows[ri].push("");
+  rows[ri][ci] = val;
+}
+function addRow(){
+  if(!state.currentSheet) return toast("Create a sheet first","error");
+  state.testdata.sheets[state.currentSheet].push([]);
+  renderDataTable();
+}
+function addCol(){
+  if(!state.currentSheet) return toast("Create a sheet first","error");
+  state.testdata.sheets[state.currentSheet].forEach(r=>r.push(""));
+  if(state.testdata.sheets[state.currentSheet].length===0) state.testdata.sheets[state.currentSheet].push([""]);
+  renderDataTable();
+}
+function addSheet(){
+  const name = prompt("New sheet name:");
+  if(!name) return;
+  state.testdata.sheets[name] = [[]];
+  state.currentSheet = name;
+  renderSheetTabs(); renderDataTable();
+}
+async function saveTestData(){
+  const res = await fetch("/api/testdata",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sheets:state.testdata.sheets})});
+  const data = await res.json();
+  if(data.error){ toast(data.error,"error"); return; }
+  toast("Saved to data.xlsx", "success");
+}
+
+// ---------------- Config ----------------
+async function loadConfig(){
+  const res = await fetch("/api/config");
+  const data = await res.json();
+  state.config = data.entries || [];
+  renderConfigTable();
+}
+function renderConfigTable(){
+  const tbody = document.querySelector("#configTable tbody");
+  tbody.innerHTML = state.config.map((e,i)=>`<tr>
+    <td><input value="${e.key.replace(/"/g,'&quot;')}" onchange="state.config[${i}].key=this.value" style="width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px;border-radius:5px;"></td>
+    <td><input value="${e.value.replace(/"/g,'&quot;')}" onchange="state.config[${i}].value=this.value" style="width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px;border-radius:5px;"></td>
+    <td><button class="btn danger small" onclick="removeConfigRow(${i})">✕</button></td>
+  </tr>`).join("");
+}
+function addConfigRow(){ state.config.push({key:"",value:""}); renderConfigTable(); }
+function removeConfigRow(i){ state.config.splice(i,1); renderConfigTable(); }
+async function saveConfig(){
+  const res = await fetch("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({entries:state.config})});
+  const data = await res.json();
+  if(data.error){ toast(data.error,"error"); return; }
+  toast("Config.Properties saved", "success");
+}
+
+// ---------------- Init ----------------
+rescan();
+loadReports();
+loadTestData();
+loadConfig();
+</script>
+</body>
+</html>

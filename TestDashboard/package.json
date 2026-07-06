@@ -1,0 +1,15 @@
+{
+  "name": "test-dashboard",
+  "version": "1.0.0",
+  "description": "Local dashboard for Hybrid_Framework Selenium/TestNG project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "xml2js": "^0.6.2",
+    "xlsx": "^0.18.5"
+  }
+}
