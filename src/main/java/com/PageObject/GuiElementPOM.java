@@ -2,8 +2,16 @@ package com.PageObject;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
-public class GuiElementPOM {
+import com.Utility.BaseClass;
+import com.Utility.Library;
+
+public class GuiElementPOM extends BaseClass {
+
+    public GuiElementPOM() {
+        PageFactory.initElements(driver, this);
+    }
 
     @FindBy(id = "name")
     private WebElement nameTextBox;
@@ -17,35 +25,14 @@ public class GuiElementPOM {
     @FindBy(id = "textarea")
     private WebElement addressTextArea;
 
-    public WebElement getNameTextBox() {
-        return nameTextBox;
-    }
+    public void enterUserDetails(String name, String email, String phone, String address) {
 
-    public WebElement getEmailTextBox() {
-        return emailTextBox;
-    }
+        Library.type(nameTextBox, name, "Name Text Box");
+        Library.type(emailTextBox, email, "Email Text Box");
+        Library.type(phoneTextBox, phone, "Phone Text Box");
+        Library.type(addressTextArea, address, "Address Text Area");
 
-    public WebElement getPhoneTextBox() {
-        return phoneTextBox;
-    }
+        Library.captureStep("User Details Entered");
 
-    public WebElement getAddressTextArea() {
-        return addressTextArea;
-    }
-
-    public WebElement getTextName() {
-        return getNameTextBox();
-    }
-
-    public WebElement getTextEmail() {
-        return getEmailTextBox();
-    }
-
-    public WebElement getTextPhone() {
-        return getPhoneTextBox();
-    }
-
-    public WebElement getTextAddress() {
-        return getAddressTextArea();
     }
 }

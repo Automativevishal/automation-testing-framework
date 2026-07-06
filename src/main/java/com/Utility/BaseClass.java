@@ -174,7 +174,7 @@ public class BaseClass {
         // Priority 2 : URL from Config.properties
         Library.logInfo("URL picked from Config.properties");
 
-        return config.getOrangeHRM();
+        return config.getTestPage();
 
         // OR
         // return config.getProperty("OrangeHRM");

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<suite name="Suite">
+<listeners>
+<listener class-name="com.Utility.listeners"></listener>
+</listeners>
+
+    <test name="OrangeHRM Test">
+
+        
+        <parameter name="BrowserName" value="chrome"/>
+        <parameter name="url" value="https://automationintesting.com/selenium/testpage/?#"></parameter>
+
+        <classes>
+            <class name="com.Test.TestPage"/>
+        </classes>
+
+    </test>
+
+</suite>

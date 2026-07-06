@@ -6,9 +6,9 @@ import org.openqa.selenium.support.PageFactory;
 
 import com.Utility.Library;
 
-public class PIMPage extends Library {
+public class PIMPAddEmployeeage extends Library {
 
-    public PIMPage() {
+    public PIMPAddEmployeeage() {
         PageFactory.initElements(driver, this);
     }
 

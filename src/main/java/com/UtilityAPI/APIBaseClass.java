@@ -1,6 +1,8 @@
-package com.Utility;
+package com.UtilityAPI;
 
 import org.testng.annotations.BeforeClass;
+
+import com.Utility.ConfigDataProvider;
 
 import io.restassured.RestAssured;
 

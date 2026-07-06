@@ -1,11 +1,11 @@
-package com.Test;
+package com.TestAPI;
 
 import static io.restassured.RestAssured.given;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.Utility.APIBaseClass;
+import com.UtilityAPI.APIBaseClass;
 import com.Utility.Library;
 
 import io.restassured.response.Response;

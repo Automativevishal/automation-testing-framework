@@ -2,28 +2,26 @@ package com.PageObject;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
-public class checkBoxandRadioPOM {
+import com.Utility.BaseClass;
+import com.Utility.Library;
 
-    @FindBy(xpath = "//input[@value='male']")
-    private WebElement maleRadioButton;
+public class checkBoxandRadioPOM extends BaseClass {
+	
+	public checkBoxandRadioPOM() {
+		PageFactory.initElements(driver, this);
+	}
 
-    @FindBy(xpath = "//input[@value='sunday']")
-    private WebElement sundayCheckBox;
+    @FindBy(id ="male") private WebElement maleRadioButton;
+    @FindBy(id="monday") private WebElement chkBoxDayMonday;
 
-    public WebElement getMaleRadioButton() {
-        return maleRadioButton;
+    public void clickRadioButtin_and_Checkbox() {
+    	
+    	Library.click(maleRadioButton, "Gender Male");
+    	Library.click(chkBoxDayMonday, "Day Monday");
+    	Library.captureStep("Radio button and CheckBox Selected");
+    
     }
-
-    public WebElement getSundayCheckBox() {
-        return sundayCheckBox;
-    }
-
-    public WebElement getGengervalue() {
-        return getMaleRadioButton();
-    }
-
-    public WebElement getDayvalue() {
-        return getSundayCheckBox();
-    }
+  
 }

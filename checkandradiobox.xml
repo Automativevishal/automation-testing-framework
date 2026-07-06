@@ -5,9 +5,9 @@
         <listener class-name="com.Utility.listeners"/>
     </listeners>
 
-    <test name="Checkbox And Radio Edge">
-        <parameter name="BrowserName" value="edge"/>
-        <parameter name="environment" value="gui"/>
+    <test name="Verify radio button and checkbox selection">
+        <parameter name="BrowserName" value="chrome"/>
+        
         <parameter name="url" value="https://testautomationpractice.blogspot.com/"/>
         <classes>
             <class name="com.Test.ceckboxAndRedio"/>

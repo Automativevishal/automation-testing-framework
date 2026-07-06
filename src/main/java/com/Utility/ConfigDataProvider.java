@@ -61,8 +61,8 @@ public class ConfigDataProvider {
         return getProperty("browser", "chrome");
     }
 
-    public String getQAENV_1() {
-        return getProperty("QAENV_1");
+    public String getFacebook() {
+        return getProperty("Facebook");
     }
 
     public String getQAENV_2() {
@@ -73,8 +73,8 @@ public class ConfigDataProvider {
         return getProperty("QAENV_3");
     }
 
-    public String getGuiElemnt() {
-        return getProperty("GUIELEMENT");
+    public String getAutomation_Testing() {
+        return getProperty("Automation_Testing");
     }
 
     public String getGoogleSearch() {

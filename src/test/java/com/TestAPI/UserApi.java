@@ -1,4 +1,4 @@
-package com.Test;
+package com.TestAPI;
 
 import static io.restassured.RestAssured.given;
 

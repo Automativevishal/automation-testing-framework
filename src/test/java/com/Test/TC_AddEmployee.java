@@ -1,15 +1,17 @@
 package com.Test;
 
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import com.PageObject.PIMPage;
+import com.PageObject.PIMPAddEmployeeage;
 import com.Utility.BaseClass;
 
+@Listeners(com.Utility.listeners.class)
 public class TC_AddEmployee extends BaseClass {
 
     @Test(groups = {"ui", "orangehrm"}, description = "Create an OrangeHRM employee with login credentials")
     public void verifyAddEmployee() {
-        PIMPage pim = new PIMPage();
+        PIMPAddEmployeeage pim = new PIMPAddEmployeeage();
 
         pim.login(
                 exel.getstringdata("Orrange HRM", 1, 1),

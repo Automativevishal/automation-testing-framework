@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Facebook Login Suite" verbose="2" parallel="false">
+<suite name="Google Search Suite">
     <listeners>
         <listener class-name="com.Utility.listeners"/>
     </listeners>
 
-    <test name="Facebook Login Chrome">
+    <test name="Google Search Chrome">
         <parameter name="BrowserName" value="chrome"/>
-        <parameter name="environment" value="facebook"/>
-        <parameter name="url" value="https://www.facebook.com/login/"/>
+      
+        <parameter name="url" value="https://www.google.com/"/>
         <classes>
-            <class name="com.Test.VerifyLoginTest"/>
+            <class name="com.Test.googleSearch"/>
         </classes>
     </test>
 </suite>
