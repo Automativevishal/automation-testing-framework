@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 
-<suite name="Parallel Suite" parallel="tests" thread-count="3">
+<suite name="Parallel Suite" parallel="tests" thread-count="1">
 
     <listeners>
         <listener class-name="com.Utility.listeners"/>
     </listeners>
 
     <!-- Google -->
-    <test name="Google">
+    <test name="Google Search Chrome">
         <parameter name="BrowserName" value="chrome"/>
-        <parameter name="environment" value="google"/>
+      
         <parameter name="url" value="https://www.google.com/"/>
-
         <classes>
-            <class name="com.Test.GooleSeleniumSearch"/>
+            <class name="com.Test.googleSearch"/>
         </classes>
     </test>
 
@@ -25,7 +24,7 @@
         <parameter name="url" value="https://www.facebook.com/login/"/>
 
         <classes>
-            <class name="com.Test.VerifyLoginTest"/>
+            <class name="com.Test.fbLogin"/>
         </classes>
     </test>
 
@@ -38,6 +37,19 @@
         <classes>
             <class name="com.Test.TC_AddEmployee"/>
         </classes>
+   
+    </test>
+    
+    <test name="Automati site">
+
+        
+        <parameter name="BrowserName" value="chrome"/>
+        <parameter name="url" value="https://automationintesting.com/selenium/testpage/?#"></parameter>
+
+        <classes>
+            <class name="com.Test.TestPage"/>
+        </classes>
+
     </test>
 
 </suite>

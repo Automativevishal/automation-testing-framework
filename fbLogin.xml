@@ -5,7 +5,7 @@
 <listener class-name="com.Utility.listeners"></listener>
 </listeners>
   <test thread-count="5" name="Facebook login test">
-  <parameter name="url" value="">https://www.facebook.com/login/</parameter>
+  <parameter name="url" value="https://www.facebook.com/login/"></parameter>
     <classes>
       <class name="com.Test.fbLogin"/>
     </classes>
