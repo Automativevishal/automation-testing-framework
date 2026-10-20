@@ -77,5 +77,7 @@ public class dataEntryPOM extends Library {
         Library.captureFullPageScreenshot("Data Entered");
 
         Library.click(submitButton, "Submit Button");
+        Library.waitForPageToLoad();
+        Library.captureFullPageScreenshot("Data Added");
     }
 }
