@@ -3,9 +3,11 @@ package com.Utility;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -126,6 +128,26 @@ public class Library extends BaseClass {
         performStep("Uploaded '" + fileName + "' into " + fieldName, fieldName, () -> {
             WebElement uploadElement = waitForElementVisible(element);
             uploadElement.sendKeys(filePath);
+        });
+    }
+    
+    public static void uploadMultipleFiles(
+            WebElement element,
+            String[] filePaths,
+            String fieldName) {
+
+        String fileNames = Arrays.stream(filePaths)
+                .map(path -> extractFileName(path))
+                .collect(Collectors.joining(", "));
+
+        performStep("Uploaded '" + fileNames + "' into " + fieldName,
+                fieldName, () -> {
+
+            WebElement uploadElement = waitForElementVisible(element);
+
+            uploadElement.sendKeys(
+                    String.join("\n", filePaths)
+            );
         });
     }
 

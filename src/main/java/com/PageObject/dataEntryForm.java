@@ -7,6 +7,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+
 import java.time.Duration;
 
 import com.Utility.Library;
@@ -51,9 +52,18 @@ public class dataEntryForm extends Library {
     @FindBy(id = "datepicker")
     private WebElement datepicker1;
 
-    // Date Picker 2 - dd/mm/yyyy (readonly)
+    // Date Picker 2 - readonly jQuery UI calendar
     @FindBy(id = "txtDate")
     private WebElement datepicker2Input;
+
+    @FindBy(xpath = "//div[contains(@class,'ui-datepicker')]//select[contains(@class,'ui-datepicker-month')]")
+    private WebElement calendarMonth;
+
+    @FindBy(xpath = "//div[contains(@class,'ui-datepicker')]//select[contains(@class,'ui-datepicker-year')]")
+    private WebElement calendarYear;
+
+    @FindBy(xpath = "//div[contains(@class,'ui-datepicker')]//td[@data-month='9' and @data-year='2026']//a[@data-date='20']")
+    private WebElement october20;
 
     // Date Picker 3 - Date Range
     @FindBy(id = "start-date")
@@ -61,16 +71,6 @@ public class dataEntryForm extends Library {
 
     @FindBy(id = "end-date")
     private WebElement enddate;
-
-    // Date Picker 2 calendar controls
-    @FindBy(xpath = "//select[contains(@class,'ui-datepicker-month')]")
-    private WebElement calendarMonth;
-
-    @FindBy(xpath = "//select[contains(@class,'ui-datepicker-year')]")
-    private WebElement calendarYear;
-
-    @FindBy(xpath = "//div[contains(@class,'ui-datepicker')]//a[@data-date='20']")
-    private WebElement selectDate20;
 
     // Submit
     @FindBy(xpath = "//button[@class='submit-btn']")
@@ -110,7 +110,7 @@ public class dataEntryForm extends Library {
             "Date Picker 1: " +
             datepicker1.getAttribute("value"));
 
-        // Date Picker 2 - readonly calendar
+        // Date Picker 2 - open calendar first
         Library.click(datepicker2Input, "Open Date Picker 2");
 
         wait.until(ExpectedConditions.visibilityOf(calendarMonth));
@@ -118,8 +118,10 @@ public class dataEntryForm extends Library {
         new Select(calendarMonth).selectByVisibleText("Oct");
         new Select(calendarYear).selectByVisibleText("2026");
 
-        wait.until(ExpectedConditions.elementToBeClickable(selectDate20));
-        Library.click(selectDate20, "Select October 20");
+        wait.until(
+            ExpectedConditions.elementToBeClickable(october20));
+
+        Library.click(october20, "Select October 20, 2026");
 
         System.out.println(
             "Date Picker 2: " +
